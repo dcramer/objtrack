@@ -4,10 +4,10 @@ from django_object_view_tracking.constants import *
 
 class ObjectTrackerHandler(object):
     def mark_as_viewed(self, instance, commit=True):
-        objects = self.objects
+        objects = self.instances
         if instance.pk not in objects:
             objects.append(unicode(instance.pk))
-            self.objects = objects
+            self.instances = objects
             if commit:
                 self.save()
 
@@ -17,7 +17,7 @@ class ObjectTrackerHandler(object):
             self.save()
 
     def has_viewed(self, instance):
-        _has_viewed = unicode(self.object.pk) in self.objects.split(OBJECT_TRACKING_KEY_SEPARATOR)
+        _has_viewed = unicode(self.object.pk) in self.instances
         if not _has_viewed:
             _has_viewed = self.date and getattr(instance, OBJECT_TRACKING_DATE_ATTRIBUTE) < self.date
         return _has_viewed
@@ -36,7 +36,7 @@ class ObjectTrackerSession(ObjectTrackerHandler):
     def _set_objects(self, values):
         self.session.setdefault(OBJECT_TRACKING_SESSION_KEY, {})['objects'] = OBJECT_TRACKING_KEY_SEPARATOR.join(values)
     
-    objects = property(_get_objects, _set_objects)
+    instances = property(_get_objects, _set_objects)
     
     def _get_date(self):
         return self._get_session().get('date', None)

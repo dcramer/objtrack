@@ -68,4 +68,4 @@ class ObjectTracker(models.Model, ObjectTrackerHandler):
     def _set_objects(self, values):
         self._objects = OBJECT_TRACKING_KEY_SEPARATOR.join(values)
     
-    objects = property(_get_objects, _set_objects)
+    instances = property(_get_objects, _set_objects)
