@@ -8,10 +8,12 @@ read since that date. These are stored in a text field and separated by
 
 Example use:
 
+from django_object_view_tracking import ObjectTracker
+
 def view_forum_list(request):
     categories = Category.objects.all()
     
-    tracking = ObjectTracking.objects.get_for_request(request, Thread)
+    tracking = ObjectTracker.objects.get_for_request(request, Thread)
     
     # Don't forget you still need to update a date field when a new thread
     # is added to the forum.
@@ -26,7 +28,7 @@ def view_forum_list(request):
 def view_thread_list(request):
     threads = Thread.objects.all()
     
-    tracking = ObjectTracking.objects.get_for_request(request, Thread)
+    tracking = ObjectTracker.objects.get_for_request(request, Thread)
     
     # This isn't the *best* approach to checking if it's been viewed, but it works
     for thread in threads:
@@ -37,7 +39,7 @@ def view_thread_list(request):
 def view_thread(request, thread_id):
     thread = Thread.objects.get(pk=thread_id)
 
-    tracking = ObjectTracking.objects.get_for_request(request, Thread)
+    tracking = ObjectTracker.objects.get_for_request(request, Thread)
 
     tracking.mark_as_viewed(thread)
 
@@ -52,13 +54,13 @@ from django.contrib.contenttypes.models import ContentType
 from django_object_view_tracking.constants import *
 from django_object_view_tracking.manager import *
 
-class ObjectTracking(models.Model, ObjectTrackingHandler):
+class ObjectTracker(models.Model, ObjectTrackerHandler):
     user            = models.ForeignKey(User)
     content_type    = models.ForeignKey(ContentType)
     date            = models.DateTimeField(blank=True, null=True)
     _objects        = models.TextField(db_column='objects')
 
-    objects         = ObjectTrackingManager()
+    objects         = ObjectTrackerManager()
 
     def _get_objects(self):
         return self._objects.split(OBJECT_TRACKING_KEY_SEPARATOR)

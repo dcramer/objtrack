@@ -2,7 +2,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from django_object_view_tracking.constants import *
 
-class ObjectTrackingHandler(object):
+class ObjectTrackerHandler(object):
     def mark_as_viewed(self, instance, commit=True):
         objects = self.objects
         if instance.pk not in objects:
@@ -22,7 +22,7 @@ class ObjectTrackingHandler(object):
             _has_viewed = self.date and getattr(instance, OBJECT_TRACKING_DATE_ATTRIBUTE) < self.date
         return _has_viewed
 
-class ObjectTrackingSession(ObjectTrackingHandler):
+class ObjectTrackerSession(ObjectTrackerHandler):
     def __init__(self, request):
         self.session = request.session
         self.user = request.user
@@ -50,7 +50,7 @@ class ObjectTrackingSession(ObjectTrackingHandler):
         # Handled automatically by Django's sessions
         pass
         
-class ObjectTrackingManager(models.Manager):
+class ObjectTrackerManager(models.Manager):
     def get_for_request(self, request, model_class):
         ct = ContentType.objects.get_for_model(model_class)
         if request.user.is_authenticated():
@@ -59,4 +59,4 @@ class ObjectTrackingManager(models.Manager):
             except self.model.DoesNotExist:
                 return self.model(user=request.user, content_type=ct)
         else:
-            return ObjectTrackingSession(request)
+            return ObjectTrackerSession(request)
