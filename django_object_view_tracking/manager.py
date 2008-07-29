@@ -17,7 +17,7 @@ class ObjectTrackerHandler(object):
             self.save()
 
     def has_viewed(self, instance):
-        _has_viewed = unicode(self.object.pk) in self.instances
+        _has_viewed = unicode(instance.pk) in self.instances
         if not _has_viewed:
             _has_viewed = self.date and getattr(instance, OBJECT_TRACKING_DATE_ATTRIBUTE) < self.date
         return _has_viewed
