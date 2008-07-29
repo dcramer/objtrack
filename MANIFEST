@@ -1,0 +1,5 @@
+setup.py
+django_object_view_tracking/models.py
+django_object_view_tracking/constants.py
+django_object_view_tracking/manager.py
+django_object_view_tracking/__init__.py
