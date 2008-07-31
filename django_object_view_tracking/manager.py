@@ -23,18 +23,22 @@ class ObjectTrackerHandler(object):
         return _has_viewed
 
 class ObjectTrackerSession(ObjectTrackerHandler):
-    def __init__(self, request):
+    def __init__(self, request, content_type):
         self.session = request.session
         self.user = request.user
+        self.content_type = content_type
     
     def _get_session(self):
-        return self.session.get(OBJECT_TRACKING_SESSION_KEY, {})
+        return self.session.get(OBJECT_TRACKING_SESSION_KEY, {}).get(self.content_type.id, {})
     
+    def _set_session_value(self, key, value):
+        self.session.setdefault(OBJECT_TRACKING_SESSION_KEY, {}).setdefault(self.content_type.id, {})[key] = value
+        
     def _get_objects(self):
         return self._get_session().get('objects', '').split(OBJECT_TRACKING_KEY_SEPARATOR)
     
     def _set_objects(self, values):
-        self.session.setdefault(OBJECT_TRACKING_SESSION_KEY, {})['objects'] = OBJECT_TRACKING_KEY_SEPARATOR.join(values)
+        self._set_session_value('objects', OBJECT_TRACKING_KEY_SEPARATOR.join(values))
     
     instances = property(_get_objects, _set_objects)
     
@@ -42,7 +46,7 @@ class ObjectTrackerSession(ObjectTrackerHandler):
         return self._get_session().get('date', None)
 
     def _set_date(self, value):
-        self.session.setdefault(OBJECT_TRACKING_SESSION_KEY, {})['date'] = value
+        self._set_session_value('date', value)
         
     date = property(_get_date, _set_date)
     
@@ -59,4 +63,4 @@ class ObjectTrackerManager(models.Manager):
             except self.model.DoesNotExist:
                 return self.model(user=request.user, content_type=ct)
         else:
-            return ObjectTrackerSession(request)
+            return ObjectTrackerSession(request, ct)
