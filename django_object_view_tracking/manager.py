@@ -16,17 +16,21 @@ class ObjectTrackerHandler(object):
         if commit:
             self.save()
 
-    def has_viewed(self, instance):
-        _has_viewed = unicode(instance.pk) in self.instances
+    def has_viewed_raw(self, pk, date_value):
+        _has_viewed = pk in self.instances
         if not _has_viewed:
-            _has_viewed = self.date and getattr(instance, OBJECT_TRACKING_DATE_ATTRIBUTE) < self.date
+            _has_viewed = self.date and date_value < self.date
         return _has_viewed or False
 
+    def has_viewed(self, instance):
+        return self.has_viewed_raw(instance.pk, getattr(instance, self.date_attr))
+
 class ObjectTrackerSession(ObjectTrackerHandler):
-    def __init__(self, request, content_type):
+    def __init__(self, request, content_type, date_attr):
         self.session = request.session
         self.user = request.user
         self.content_type = content_type
+        self.date_attr = date_attr
     
     def _get_session(self):
         return self.session.get(OBJECT_TRACKING_SESSION_KEY, {}).get(self.content_type.id, {})
@@ -55,12 +59,14 @@ class ObjectTrackerSession(ObjectTrackerHandler):
         pass
         
 class ObjectTrackerManager(models.Manager):
-    def get_for_request(self, request, model_class):
+    def get_for_request(self, request, model_class, date_attr=OBJECT_TRACKING_DATE_ATTRIBUTE):
         ct = ContentType.objects.get_for_model(model_class)
         if request.user.is_authenticated():
             try:
-                return self.get(user=request.user, content_type=ct)
+                instance = self.get(user=request.user, content_type=ct)
             except self.model.DoesNotExist:
-                return self.model(user=request.user, content_type=ct)
+                instance = self.model(user=request.user, content_type=ct)
+            instance.date_attr = date_attr
+            return instance
         else:
-            return ObjectTrackerSession(request, ct)
+            return ObjectTrackerSession(request, ct, date_attr)
