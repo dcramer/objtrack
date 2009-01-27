@@ -5,8 +5,9 @@ from django_object_view_tracking.constants import *
 class ObjectTrackerHandler(object):
     def mark_as_viewed(self, instance, commit=True):
         objects = self.instances
-        if instance.pk not in objects:
-            objects.append(unicode(instance.pk))
+        pk = unicode(instance.pk)
+        if pk not in objects:
+            objects.append(pk)
             self.instances = objects
             if commit:
                 self.save()
@@ -17,7 +18,7 @@ class ObjectTrackerHandler(object):
             self.save()
 
     def has_viewed_raw(self, pk, date_value):
-        _has_viewed = pk in self.instances
+        _has_viewed = unicode(pk) in self.instances
         if not _has_viewed:
             _has_viewed = self.date and date_value < self.date
         return _has_viewed or False
