@@ -20,7 +20,7 @@ class ObjectTrackerHandler(object):
         _has_viewed = unicode(instance.pk) in self.instances
         if not _has_viewed:
             _has_viewed = self.date and getattr(instance, OBJECT_TRACKING_DATE_ATTRIBUTE) < self.date
-        return _has_viewed
+        return _has_viewed or False
 
 class ObjectTrackerSession(ObjectTrackerHandler):
     def __init__(self, request, content_type):
