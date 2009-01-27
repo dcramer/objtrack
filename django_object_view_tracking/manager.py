@@ -1,6 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django_object_view_tracking.constants import *
+import datetime
 
 class ObjectTrackerHandler(object):
     def mark_as_viewed(self, instance, commit=True):
