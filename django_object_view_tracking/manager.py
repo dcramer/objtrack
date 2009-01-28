@@ -20,8 +20,8 @@ class ObjectTrackerHandler(object):
 
     def has_viewed_raw(self, pk, date_value):
         _has_viewed = unicode(pk) in self.instances
-        if not _has_viewed:
-            _has_viewed = self.date and date_value < self.date
+        if _has_viewed and self.date:
+            _has_viewed = self.date > date_value
         return _has_viewed or False
 
     def has_viewed(self, instance):
