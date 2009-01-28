@@ -19,7 +19,7 @@ class ObjectTracker(object):
         
         ts = datetime.datetime.now()
         
-        self.session.setdefault(self.key_name, {'_date': ts}).setdefault(ct, {})[instance.pk] = ts
+        self.session.setdefault(self.key_name, {}).setdefault(ct, {})[instance.pk] = ts
 
     def mark_all_as_viewed(self, commit=True):
         self.session[self.key_name] = {'_date': datetime.datetime.now()}
@@ -31,7 +31,7 @@ class ObjectTracker(object):
             
         last_date = self.session[self.key_name].get('_date')
         if not last_date:
-            self.session[self.key_name]['_date'] = last_date = datetime.datetime.now()
+            return False
         
         ct = ContentType.objects.get_for_model(model_class).id
         if ct not in session:
