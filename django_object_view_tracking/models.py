@@ -38,8 +38,9 @@ class ObjectTracker(object):
         # The last date that we say "everything before this has been seen"
         last_date = self.session[self.key_name].get('_date')
         ct = ContentType.objects.get_for_model(model_class).id
-        if ct not in session or not last_date or not date_value:
-            return False
+        if ct not in session:
+            if not last_date or not date_value:
+                return False
         else:
             last_date = session[ct].get(pk, last_date)
         return last_date > date_value
