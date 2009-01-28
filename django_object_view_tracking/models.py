@@ -29,15 +29,17 @@ class ObjectTracker(object):
         if not session:
             return False
             
-        last_date = self.session[self.key_name].get('_date', None)
+        last_date = self.session[self.key_name].get('_date')
+        if not last_date:
+            self.sessoin[self.key_name]['_date'] = last_date = datetime.datetime.now())
         
         ct = ContentType.objects.get_for_model(model_class).id
         if ct not in session:
-            if last_date and date_value < last_date:
+            if date_value < last_date:
                 return True
             return False
         
-        if not date_value or not last_date:
+        if not date_value:
             return False
         
         date = session[ct].get(pk, last_date)
