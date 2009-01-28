@@ -31,7 +31,7 @@ class ObjectTracker(object):
             
         last_date = self.session[self.key_name].get('_date')
         if not last_date:
-            self.sessoin[self.key_name]['_date'] = last_date = datetime.datetime.now()
+            self.session[self.key_name]['_date'] = last_date = datetime.datetime.now()
         
         ct = ContentType.objects.get_for_model(model_class).id
         if ct not in session:
