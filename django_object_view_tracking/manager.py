@@ -15,6 +15,7 @@ class ObjectTrackerHandler(object):
 
     def mark_all_as_viewed(self, commit=True):
         self.date = datetime.datetime.now()
+        self.instances = []
         if commit:
             self.save()
 
