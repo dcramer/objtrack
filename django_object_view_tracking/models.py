@@ -14,6 +14,9 @@ class ObjectTracker(object):
     def __init__(self, session):
         self.session = session
     
+    def set_date(self, date):
+        self.session.setdefault(self.key_name, {})['_date'] = date
+    
     def mark_as_viewed(self, instance, commit=True):
         ct = ContentType.objects.get_for_model(instance.__class__).id
         
