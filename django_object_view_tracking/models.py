@@ -17,13 +17,16 @@ class ObjectTracker(object):
     def set_date(self, date):
         self.session.setdefault(self.key_name, {})['_date'] = date
     
-    def mark_as_viewed(self, instance, commit=True):
+    def mark_as_viewed(self, instance):
         ct = ContentType.objects.get_for_model(instance.__class__).id
         
         ts = datetime.datetime.now()
         
-        self.session.setdefault(self.key_name, {}).setdefault(ct, {})[instance.pk] = ts
-
+        if self.key_name not in self.session:
+            self.session[self.key_name] = {}
+        self.session[self.key_name].setdefault(ct, {})[instance.pk] = ts
+        self.session.save()
+        
     def mark_all_as_viewed(self, commit=True):
         self.session[self.key_name] = {'_date': datetime.datetime.now()}
 
@@ -31,22 +34,16 @@ class ObjectTracker(object):
         session = self.session.get(self.key_name)
         if not session:
             return False
-            
+
+        # The last date that we say "everything before this has been seen"
         last_date = self.session[self.key_name].get('_date')
-        if not last_date:
-            return False
-        
         ct = ContentType.objects.get_for_model(model_class).id
         if ct not in session:
-            if date_value < last_date:
-                return True
-            return False
-        
-        if not date_value:
-            return False
-        
-        date = session[ct].get(pk, last_date)
-        return date_value < date
+            if not last_date or not date_value:
+                return False
+        else:
+            last_date = session[ct].get(pk, last_date)
+        return last_date > date_value
 
     def has_viewed(self, instance, date_attr=None):
         if date_attr:
