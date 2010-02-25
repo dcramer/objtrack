@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(name='objtrack',
       version='.'.join(map(str, __import__('objtrack', globals(), locals(), []).__version__)),
