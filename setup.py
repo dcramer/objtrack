@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='objtrack',
-      version='1.0',
+      version='.'.join(map(str, __import__('objtrack', globals(), locals(), []).__version__)),
       description='Django Object View Tracking',
       author='David Cramer',
       author_email='dcramer@gmail.com',
