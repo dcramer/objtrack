@@ -1,14 +1,15 @@
+__version__ = (0, 1)
+
 """
 A generic object view tracking model.
 
 This will store a "last viewed date" which says "everything that has changed"
 since this date, is unread. It also stores a list of primary keys, which has been
-read since that date. These are stored in a text field and separated by
-`OBJECT_TRACKING_KEY_SEPARATOR`.
+read since that date.
 
 Example use:
 
-from django_object_view_tracking import ObjectTracker
+from objtrack.models import ObjectTracker
 
 def view_forum_list(request):
     categories = Category.objects.all()
@@ -45,5 +46,3 @@ def view_thread(request, thread_id):
 
     return render(...)
 """
-
-from django_object_view_tracking.models import ObjectTracker
