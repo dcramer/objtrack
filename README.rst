@@ -73,6 +73,6 @@ You can also use it within Coffin or Django templates::
 
 	{% load tracking %}
 	
-	{% for instance, has_viewed in queryset|with_tracking:"date_field" %}
+	{% for instance, has_viewed in queryset|with_tracking(request.session, "date_field") %}
 		...
 	{% endfor %}
